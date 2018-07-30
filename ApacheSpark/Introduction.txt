@@ -1,0 +1,8 @@
+Apache Spark is a unified analytics engine for large-scale data processing.
+Download Spark from https://spark.apache.org/downloads.html
+Make sure to select "pre-built for apache hadoop 2.7 and later " under choose a package.
+I have downloaded Spark (spark-2.3.1-bin-hadoop2.7.tar) and unzipped the folder by using winrar and copied content 
+  from D:\java\spark-2.3.1-bin-hadoop2.7\spark-2.3.1-bin-hadoop2.7 to c:\spark
+Now add a new user variable in environment varialbes as SPARK_HOME with 'c:\spark' value.
+To use spark on windows we need to use winutils.exe. I have downloaded  and added a new environment variable "HADOOP_HOME" with value "c:\winutils"
+Also add JAVA_HOME user variable in environmental variable with value as 'C:\Program Files\Java\jdk1.8.0_181'.  Try with java 8 version only.
