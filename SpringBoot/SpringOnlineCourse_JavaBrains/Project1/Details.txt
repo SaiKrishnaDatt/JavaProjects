@@ -1,0 +1,343 @@
+Spring boot is a way in which you can quickly startup simple or complex java spring applications.
+We can build end-to-end application , which is production ready.
+If we have to build spring application from scratch the go to solution is springboot 
+
+
+What is Spring Boot?
+Building an end to end app
+Spring boot features
+Configuration and customizations
+GOAL: End-to-end restful API which has  a controller and endpoints and it connects to the database.
+App that we build: API which we build is for course management system.
+
+What is SpringBoot:
+ 
+There are two words here : i> Spring (Spring Framework) ii> BOOT(BootStrap)
+Definition: Spirng boot makes it easy to create stand-alone, production-grade Srping based applications that you can “ just run”.
+
+If you spend time creating spring application without using springboot, you will understand the pain of having to do a lot of stuff to get the point where you ready to run the application. There are many configurations you have to do and a lot of Jar we need to import etc. then only we get to point where the application is runnable. But with Spring boot that no longer the case, you have an easy way to create a spring application that’s just runs with very little effect.
+Springboot is a tool which you use to create spring based applications
+
+
+SPRING: As of 2006: It performs dependency injection	
+	 AS of now: it no longer the case, it is much more than dependency injection 
+1>	It is a whole application framework, it has origin from the concept of dependency injection and does whole lot more. It Is something that let you build enterprise applications.
+2>	It also have programming and configuration model.
+For things like connecting to database and running queries and things like handling http request or having some kind of MVC layer. What Spring lets you do is build classes which are simple pojos they have annotations on them which denote what they are .
+3>	It also provide infrastructure support.
+
+
+Problem with Spring
+1>	Huge framework
+2>	Mulitple setup steps
+3>	Mulitple configuration steps.
+4>	Multiple build and deploy steps.
+
+Can we abstract these steps?
+SPRINGBOOT 
+1>	Springboot is Opinionated
+Start with the choices and think what to do and change things if required.
+2>	Springboot features Convention over configuration  concept.
+If you have to do a 100 different things in order to configure something, let’s look at 80% use cases and that be the default and only if you have 20% which things would be little bit different then you configure it 
+3>	Standalone: the thing that springboot gives you is spring application, this spring application is going to be standalone application. Typically when you are building spring application you are building WAR(web application ) files that you  deploy to tomcat container or some other servlet container . With Springboot what you get is a standalone application whet you get is something which you can run and have it start a webserver , you don’t have to find servlet container, configure it , deploy it  .. none of that stuff is required) 
+4>	Production ready.
+
+ When we build spring application we need to import JARs  to handle dependencies we add jars to calasspath. In java all jars are placed in class paths.
+
+Maven is build and dependency management tool when we need  jars we are not going to manually download them and add them to classpath , we just declare our dependencies in POM.xml file  Maven will automatically download dependencies for us and added them classpath. 
+Maven also let you create a starter project, so that you don’t have to create all those individual files yourself , comes with arctype what its called a simple template which let  you start a simple project. 
+
+What do we have to do to make simple maven project a Springboot project is ?
+ Step 1> Add below block of code within <project> tag  in pom.xml.
+
+  <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.4.2.RELEASE</version>
+    </parent>
+
+Why we have to make our project (CourseAPI) as child of Springboot-starter-project
+Springboot has a philosopy of convention over configuration , for 80% of the  usecase springboot provides default configuration for only 20% of the usecase we have our own configuration that we have to implement.
+Springboot is an opinionated framework, there are some configurations that it come out with the box.
+`	
+What the spring boot team has done is they created a project called ‘the Spring-boot-Starter-project’ and they put all the default maven configuration into that project.
+As we declare ‘srping-boot-starter-project’ as parent , our project inherits all configuration from parent.
+
+Step (ii) it is to declare dependencies: Maven is build and dependency management tool when we need  jars we are not going to manually download them and add them to classpath , we just declare our dependencies in POM.xml file  Maven will automatically download dependencies for us and added them classpath. 
+
+
+We are creating a webapplication which uses REST API.so we need to build spring web application.
+There are bunch of jars which we need to import for creating a web app. It is  not simple list, it’s a big list.
+
+We need to add all jars in pom.xml but here spring boot  help us , it knows for creating web apps certain jar are default , so sprinboot has ‘srping-boot-starter-web’.
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.0.2.RELEASE</version>
+        </dependency>
+
+
+
+Starting a spring boot application :
+
+Create a class in src/main/java  - CoureApiAPP
+Why we are creating a calss with main method?
+ We know how springboot creates a spring application that’s spring is a standalone, doesn’t need servlet container and doesn’t need to be deployed on a server the way it works is by having a class with the main method that you can start just like any other simple java program which has a main method. 
+Our main method creates a servlet container starts it and hosts your application for us.
+
+Step (i) : we need to say to spring that our class a spring application how do we do that ?
+There is an annotation which lets us do exactly this and we need to annotate the main class with the main method with @SpringBootApplication 
+CourseApiApp.java
+package io.java.springboot;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class CourseApiApp {
+    public static void main(String[] args){
+        SpringApplication.run(CourseApiApp.class,args);
+    }
+}
+
+
+Adding a REST Controller:
+
+What we want to do is be able to handle certain request, you can have a specific request and say given the request. I want this piece of code to execute on the servlet container.
+
+HOW DO WE DO THAT?
+
+You do that by adding a controller.
+In Spring, a controller is basically a java class that has certain annotations marked in it.
+This annotations lets spring know what is the URL that you are mapping it to and what should happen when the request comes to that URL , so there are two pieces of information that spring needs to know and you are providing both of them in the class itself and annotation of the class.
+Second we need to write the method that needs to be executed when that is triggered.(When URL is called).
+
+The web layer in the springboot application  liverages a spring framework called springMVC. Lets you build server side code which maps to URL and provides responses. We can  have REST API response just JSON or full HTML page.
+
+Lets build simple JSON response  when we hit Http://localhost/hello.
+HelloController.java
+package io.java.springboot;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloController {
+  @RequestMapping("/hello")
+    public String sayHi(){
+        return  "Hi ";
+    }
+}
+
+
+•	Anytime you are building a controller just add @RestController in the java class
+sayHi() has methods to be called when user calls  Http://localhost/hello. How do we tell the spring framework that when ever we get /hello request call this method , we tell spring framework by adding @RequestMapping annotation. It takes (“/hello”) parameter, so whenever we get request to this application  with /hello URL we want sayHi() method to be executed . There is no http method over there is it applicable to all?
+By default @RequestMapping annotation maps to all HTTP methods.
+
+Question : How do we plug the class into Spirng framework?
+We don’t have to do anything because the very fact of you putting you in the class path means that spring framework scans and it knows what needs to happen.  When spring frameworks starts up it scans the class path scan and finds annotations and registers those annotations . 
+
+One more controller : TopicController.java
+package io.java.springboot.topic;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+public class TopicController {
+@Autowired
+private TopicService topicservice;
+
+    @RequestMapping("/topics")
+    public List<Topic> getAllTopics(){
+        return topicservice.getAllTopics();
+    }
+
+    @RequestMapping("/topics/{id}")
+    public Topic getTopic(@PathVariable String id){
+        return topicservice.getTopic(id);
+    }
+
+    @PostMapping("/topics")
+    public void addTopic(@RequestBody Topic topic) {
+        topicservice.addTopic(topic);
+    }
+
+    @RequestMapping(method=RequestMethod.PUT, value="/topics/{id}")
+        public void updateTopic(@RequestBody Topic topic,@PathVariable String id){
+            topicservice.updateTopic(id,topic);
+        }
+
+    @RequestMapping(method=RequestMethod.DELETE, value="/topics/{id}")
+    public void deleteTopic(@PathVariable String id){
+         topicservice.deleteTopic(id);
+    }
+
+
+}
+
+
+Topic.java
+package io.java.springboot.topic;
+
+public class Topic {
+
+    private String id;
+    private  String name;
+    private String  description;
+
+
+    public Topic() {
+    }
+
+    public Topic(String id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}
+
+
+
+TopicService.java
+package io.java.springboot.topic;
+
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+
+import java.util.Objects;
+
+@Service
+public class TopicService {
+
+    private List<Topic> topics = new ArrayList<>(Arrays.asList(
+            new Topic("Spring","Spring Framework","Spring Framework Description"),
+            new Topic("java","Core java","Core Java Description"),
+            new Topic("Javascript","Javascript","Javascript Description")
+    ));
+
+    public TopicService(){}
+    public List<Topic> getAllTopics(){
+        return topics;
+    }
+
+    public Topic getTopic(String id){
+        return topics.stream().filter(t -> t.getId().equals(id)).findFirst().get();
+    }
+
+    public void addTopic(Topic topic){
+        topics.add(topic);
+    }
+
+    public void updateTopic(String id,Topic topic){
+        for(int i=0;i<topics.size();i++){
+            Topic t= topics.get(i);
+            if(t.getId().equals(id)){
+                topics.set(i,topic);
+                return;
+            }
+        }
+    }
+
+    public  void deleteTopic(String id){
+        topics.removeIf(t -> t.getId().equals(id));
+    }
+
+}
+
+
+Pom.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.java.springboot</groupId>
+    <artifactId>course-api</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.4.2.RELEASE</version>
+    </parent>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.Versio>1.8</java.Versio>
+
+    </properties>
+
+    <configuration>
+        <source>1.8</source>
+        <target>1.8</target>
+    </configuration>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.0.2.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+        </plugins>
+
+
+          </build>
+
+</project>
+
