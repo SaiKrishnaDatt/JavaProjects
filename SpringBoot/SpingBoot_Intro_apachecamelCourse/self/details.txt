@@ -1,0 +1,158 @@
+Simple-rest-api Project.
+Prerequisites : JAVA, intellij
+We will be building simple Rest API that will give us current time and environment in which the app is running.
+
+How Rest flow works with SpringBoot
+ 
+
+How Rest flow works with SpringBoot
+	The whole flow starts with a client.
+	The client will sent a HTTP request to the springboot app. That request will be picked up by the Dispatcher Servlet, which is part of spring-core library and then it handles the request to the Handler Mapping.
+	The handler mapping module is responsible for finding out the endpoint which is going to full fills the clients request
+	All the end points of the application will be the part of the classes that are annotated with @RestController annotation . Once it finds the mapping then the call will go the class with the @Service annotation, this class actually holds the business logic of the application .
+	The Service class is also responsible for making the call to the class with @Repository annotation.
+	The class with @Repository annotation is responsible for connecting to the database pulling the data  and send the data back to the client as a HTTP response
+Simple REST API –Source Code flow diagram of our App.
+
+ 
+
+When client first makes http request the call first goes to controller layer and then to service layer , where business logic is located when business logic is run , the response is sent back to the controller layer and then it will be sent as a http response to the client
+SimpleRestApiApplication.java
+
+package com.learnspringboot;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SimpleRestApiApplication {
+
+   public static void main(String[] args)
+   {
+      SpringApplication.run(SimpleRestApiApplication.class, args);
+   }
+}
+
+CurrrentTimeController.java
+
+
+package com.learnspringboot.controller;
+
+import  com.learnspringboot.service.CurrentTimeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class CurrrentTimeController {
+    @Autowired
+    CurrentTimeService currrentTimeService;
+
+@RequestMapping(value = "/currentDateTime")
+    public String getCurrentDateTime(){
+    return  currrentTimeService.getCurrentDateTime();
+}
+}
+
+CurrentTimeService.java
+package com.learnspringboot.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
+/***
+ *The idea is to move the  logic from controller layer to the service layer
+ */
+@Service
+public class CurrentTimeService {
+    @Autowired
+    Environment env;
+
+    public String getCurrentDateTime(){
+        String message = env.getProperty("message");
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return message.concat(localDateTime.toString());
+    }
+
+}
+
+POM.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>com.learnspringboot</groupId>
+   <artifactId>simple-rest-api</artifactId>
+   <version>0.0.1-SNAPSHOT</version>
+   <packaging>jar</packaging>
+
+   <name>simple-rest-api</name>
+   <description>Demo project for Spring Boot</description>
+
+   <parent>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-parent</artifactId>
+      <version>2.0.2.RELEASE</version>
+      <relativePath/> <!-- lookup parent from repository -->
+   </parent>
+
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+      <java.version>1.8</java.version>
+   </properties>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-web</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-test</artifactId>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+         </plugin>
+      </plugins>
+   </build>
+
+
+</project>
+
+Application.yml
+spring:
+  profiles:
+    active: stage
+
+---
+spring:
+  profiles: dev
+
+message: Hello from DEV environment and the current date and time is
+---
+spring:
+  profiles: stage
+
+message: Hello from STAGE environment and the current date and time is
+---
+spring:
+  profiles: prod
+
+message: Hello from PROD environment and the current date and time is
+---
+
+
+
